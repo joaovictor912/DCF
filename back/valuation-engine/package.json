@@ -1,0 +1,16 @@
+{
+  "name": "ms-valuation-engine",
+  "version": "1.0.0",
+  "description": "Microsservico de Motor de Calculo (Valuation Engine) - DecisionDCF",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "ms-premissas-projecao": "file:../premissas-projecao"
+  }
+}
