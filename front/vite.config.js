@@ -6,6 +6,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      '/api-sensitivity': {
+        target: 'http://localhost:3005',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api-sensitivity/, '')
+      },
       '/api-valuation': {
         target: 'http://localhost:3004',
         changeOrigin: true,
