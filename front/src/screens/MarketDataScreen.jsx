@@ -156,7 +156,6 @@ function MarketDataScreen({
                   id="netDebt"
                   name="netDebt"
                   type="number"
-                  min="0"
                   step="any"
                   placeholder="Dívida líquida (R$)"
                   value={marketDataForm.netDebt}

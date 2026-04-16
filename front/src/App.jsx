@@ -349,8 +349,24 @@ function App() {
     event.preventDefault();
 
     const companyId = Number(assumptionsForm.companyId);
+    const discountRate = Number(String(assumptionsForm.discountRate).replace(',', '.'));
+    const perpetualGrowthRate = Number(String(assumptionsForm.perpetualGrowthRate).replace(',', '.'));
+
     if (!companyId) {
       setAssumptionsError('Selecione uma empresa para salvar as premissas.');
+      return;
+    }
+
+    if (
+      assumptionsForm.terminalValueMethod === 'GORDON'
+      && Number.isFinite(discountRate)
+      && Number.isFinite(perpetualGrowthRate)
+      && perpetualGrowthRate >= discountRate
+    ) {
+      setAssumptionsSuccess('');
+      setAssumptionsError(
+        'No metodo GORDON, a Cresc. Perpetuidade (g) deve ser menor que a Taxa de Desconto.'
+      );
       return;
     }
 
@@ -363,7 +379,7 @@ function App() {
     const payload = {
       companyId,
       projectionYears: Number(assumptionsForm.projectionYears),
-      discountRate: Number(assumptionsForm.discountRate),
+      discountRate,
       ...(assumptionsForm.riskFreeRate !== ''
         ? { riskFreeRate: Number(assumptionsForm.riskFreeRate) }
         : {}),
@@ -374,7 +390,7 @@ function App() {
       projectedEbitdaMargin: Number(assumptionsForm.projectedEbitdaMargin),
       capexPercentOfRevenue: Number(assumptionsForm.capexPercentOfRevenue),
       workingCapitalChangePercentOfRevenue: Number(assumptionsForm.workingCapitalChangePercentOfRevenue),
-      perpetualGrowthRate: Number(assumptionsForm.perpetualGrowthRate),
+      perpetualGrowthRate,
       terminalValueMethod: assumptionsForm.terminalValueMethod,
       ...(assumptionsForm.terminalValueMethod === 'EXIT_MULTIPLE'
         ? { exitMultiple: Number(assumptionsForm.exitMultiple) }

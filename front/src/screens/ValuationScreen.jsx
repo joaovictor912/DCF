@@ -13,6 +13,11 @@ function ValuationScreen({
   formatMoney,
   formatRate
 }) {
+  const totalNominalFcff = projectedCashFlows.reduce(
+    (accumulator, yearData) => accumulator + Number(yearData.fcff || 0),
+    0
+  );
+
   return (
     <>
       <section className="valuation-actions-section">
@@ -67,7 +72,7 @@ function ValuationScreen({
                   {projectedCashFlows.map((yearData) => (
                     <td key={`fcff-${yearData.year}`}>{formatMoney(yearData.fcff)}</td>
                   ))}
-                  <td>{formatMoney(valuationResult?.valuation?.discountedCashFlows)}</td>
+                  <td>{formatMoney(totalNominalFcff)}</td>
                 </tr>
                 <tr>
                   <td>FCFF a Valor Presente</td>

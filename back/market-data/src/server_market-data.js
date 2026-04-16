@@ -192,10 +192,6 @@ function validateAndNormalizeMarketData(payload, options = {}) {
     return { error: 'cash deve ser maior ou igual a 0.' };
   }
 
-  if (normalized.netDebt < 0) {
-    return { error: 'netDebt deve ser maior ou igual a 0.' };
-  }
-
   if (normalized.totalDebt < 0) {
     return { error: 'totalDebt deve ser maior ou igual a 0.' };
   }
