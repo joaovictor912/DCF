@@ -3,6 +3,7 @@ import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3003;
+const EVENT_BUS_URL = process.env.EVENT_BUS_URL || 'http://localhost:3006';
 const DEFAULT_RISK_FREE_RATE = Number(process.env.DEFAULT_RISK_FREE_RATE || 0.045);
 const DEFAULT_MARKET_RISK_PREMIUM = Number(process.env.DEFAULT_MARKET_RISK_PREMIUM || 0.055);
 const SANITIZED_DEFAULT_RISK_FREE_RATE =
@@ -15,6 +16,16 @@ const SANITIZED_DEFAULT_MARKET_RISK_PREMIUM =
   && DEFAULT_MARKET_RISK_PREMIUM < 1
     ? DEFAULT_MARKET_RISK_PREMIUM
     : 0.055;
+
+function publishEvent(eventType, data = {}) {
+  fetch(`${EVENT_BUS_URL}/publish`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ eventType, ...data })
+  }).catch((error) => {
+    console.warn(`[event-bus] Falha ao publicar ${eventType}:`, error.message);
+  });
+}
 
 app.use(cors());
 app.use(express.json());
@@ -32,22 +43,7 @@ const REQUIRED_FIELDS = [
   'terminalValueMethod'
 ];
 
-let assumptionsByCompany = {
-  1: {
-    companyId: 1,
-    projectionYears: 5,
-    discountRate: 0.115,
-    riskFreeRate: SANITIZED_DEFAULT_RISK_FREE_RATE,
-    marketRiskPremium: SANITIZED_DEFAULT_MARKET_RISK_PREMIUM,
-    revenueGrowthByYear: [0.07, 0.06, 0.055, 0.05, 0.045],
-    projectedEbitdaMargin: 0.23,
-    capexPercentOfRevenue: 0.06,
-    workingCapitalChangePercentOfRevenue: 0.01,
-    perpetualGrowthRate: 0.03,
-    terminalValueMethod: 'GORDON',
-    exitMultiple: null
-  }
-};
+let assumptionsByCompany = {};
 
 function parseNumericField(value, fieldName) {
   const parsedValue = Number(value);
@@ -293,7 +289,8 @@ app.post('/assumptions', (req, res) => {
   }
 
   assumptionsByCompany[companyId] = normalized.value;
-  return res.status(201).json(normalized.value);
+  res.status(201).json(normalized.value);
+  publishEvent('ASSUMPTIONS_UPSERTED', { payload: normalized.value });
 });
 
 app.put('/assumptions/:companyId', (req, res) => {
@@ -313,7 +310,8 @@ app.put('/assumptions/:companyId', (req, res) => {
   }
 
   assumptionsByCompany[companyId] = normalized.value;
-  return res.status(200).json(normalized.value);
+  res.status(200).json(normalized.value);
+  publishEvent('ASSUMPTIONS_UPSERTED', { payload: normalized.value });
 });
 
 app.delete('/assumptions/:companyId', (req, res) => {
@@ -328,7 +326,8 @@ app.delete('/assumptions/:companyId', (req, res) => {
   }
 
   delete assumptionsByCompany[companyId];
-  return res.status(204).send();
+  res.status(204).send();
+  publishEvent('ASSUMPTIONS_DELETED', { companyId });
 });
 
 app.listen(PORT, () => {

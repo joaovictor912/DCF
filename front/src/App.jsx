@@ -10,11 +10,11 @@ import SensitivityScreen from './screens/SensitivityScreen';
 
 const SCREEN_DEFINITIONS = [
   { id: 'home', label: 'Tela Principal' },
-  { id: 'companies', label: 'MS1 Empresas' },
-  { id: 'market-data', label: 'MS2 Market Data' },
-  { id: 'assumptions', label: 'MS3 Premissas' },
-  { id: 'valuation', label: 'MS4 Valuation' },
-  { id: 'sensitivity', label: 'MS5 Sensibilidade' }
+  { id: 'companies', label: 'Gestão de Empresas' },
+  { id: 'market-data', label: 'Dados de Mercado' },
+  { id: 'assumptions', label: 'Premissas e Projeção' },
+  { id: 'valuation', label: 'Valuation' },
+  { id: 'sensitivity', label: 'Sensibilidade' }
 ];
 
 function App() {
@@ -742,29 +742,29 @@ function App() {
       return '-';
     }
 
-    if (compactNumberDisplay) {
-      const sign = parsedValue < 0 ? '-' : '';
-      const absValue = Math.abs(parsedValue);
+    const sign = parsedValue < 0 ? '-' : '';
+    const absValue = Math.abs(parsedValue);
 
+    if (compactNumberDisplay) {
       if (absValue >= 1e12) {
-        return `${sign}R$ ${formatCompactUnit(absValue / 1e12, 'trilhão', 'trilhões')}`;
+        return `R$ ${sign}${formatCompactUnit(absValue / 1e12, 'trilhão', 'trilhões')}`;
       }
 
       if (absValue >= 1e9) {
-        return `${sign}R$ ${formatCompactUnit(absValue / 1e9, 'bilhão', 'bilhões')}`;
+        return `R$ ${sign}${formatCompactUnit(absValue / 1e9, 'bilhão', 'bilhões')}`;
       }
 
       if (absValue >= 1e6) {
-        return `${sign}R$ ${formatCompactUnit(absValue / 1e6, 'milhão', 'milhões')}`;
+        return `R$ ${sign}${formatCompactUnit(absValue / 1e6, 'milhão', 'milhões')}`;
       }
     }
 
-    return parsedValue.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
+    const absoluteFormatted = absValue.toLocaleString('pt-BR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
+
+    return `R$ ${sign}${absoluteFormatted}`;
   };
 
   const handleSelectedCompanyChange = (event) => {

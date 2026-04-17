@@ -15,6 +15,26 @@ function HomeScreen({
   upsidePercent,
   upsideRecommendation
 }) {
+  const getMarketComparisonBarHeight = (value) => {
+    const parsedValue = Number(value);
+    if (!Number.isFinite(parsedValue)) {
+      return 0;
+    }
+
+    const absValue = Math.abs(parsedValue);
+    if (absValue === 0) {
+      return 0;
+    }
+
+    const MIN_HEIGHT = 10;
+    const MAX_HEIGHT = 78;
+    const safeMaxAbs = maxMarketComparisonAbs > 0 ? maxMarketComparisonAbs : 1;
+    const ratio = absValue / safeMaxAbs;
+    const normalized = MIN_HEIGHT + ratio * (MAX_HEIGHT - MIN_HEIGHT);
+
+    return Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, normalized));
+  };
+
   return (
     <>
       <section className="home-overview-grid">
@@ -84,19 +104,28 @@ function HomeScreen({
 
         <article className="panel chart-panel">
           <h2>Mercado vs Intrínseco</h2>
-          <div className="bar-chart small">
+          <div className="bar-chart small market-comparison-chart">
             {marketComparisonData.length === 0 ? (
               <div className="bar-empty">Sem valores calculados para comparação.</div>
-            ) : marketComparisonData.map((item) => (
-              <div className="bar-item" key={item.label}>
-                <div className="bar-value">{formatMoney(item.value)}</div>
-                <div
-                  className="bar"
-                  style={{ height: `${getNormalizedBarHeight(item.value, maxMarketComparisonAbs)}px` }}
-                />
-                <div className="bar-label">{item.label}</div>
-              </div>
-            ))}
+            ) : marketComparisonData.map((item) => {
+              const parsedValue = Number(item.value);
+              const isNegative = Number.isFinite(parsedValue) && parsedValue < 0;
+              const directionClass = isNegative ? 'negative' : 'positive';
+              const barHeight = getMarketComparisonBarHeight(parsedValue);
+
+              return (
+                <div className="bar-item" key={item.label}>
+                  <div className="bar-value">{formatMoney(item.value)}</div>
+                  <div className="market-bar-area" aria-hidden="true">
+                    <div
+                      className={`bar market-comparison-bar ${directionClass}`}
+                      style={{ height: `${barHeight}px` }}
+                    />
+                  </div>
+                  <div className="bar-label">{item.label}</div>
+                </div>
+              );
+            })}
           </div>
         </article>
       </section>

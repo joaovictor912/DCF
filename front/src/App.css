@@ -77,8 +77,8 @@
 .home-overview-grid {
   padding: 0 14px;
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  grid-template-columns: 1.1fr 1fr 1fr;
 }
 
 .valuation-actions-section {
@@ -214,6 +214,40 @@
   align-self: center;
 }
 
+.market-comparison-chart {
+  align-items: stretch;
+}
+
+.market-comparison-chart .bar-item {
+  justify-content: flex-start;
+}
+
+.market-comparison-chart .bar-value {
+  min-height: 18px;
+}
+
+.market-bar-area {
+  position: relative;
+  width: 100%;
+  max-width: 60px;
+  height: 180px;
+}
+
+.market-comparison-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+}
+
+.market-comparison-bar.positive {
+  bottom: 50%;
+}
+
+.market-comparison-bar.negative {
+  top: 50%;
+}
+
 .table-section {
   padding: 0 14px 14px;
 }
@@ -279,16 +313,7 @@ th {
   padding: 6px 0;
   border-bottom: 1px dashed #d8dee6;
   font-size: 14px;
-  color: #39414d;
-}
-
-.valuation-row.total {
-  font-weight: 700;
-}
-
-.valuation-row.final {
-  border-bottom: 0;
-  font-size: 16px;
+  color: #1f2a36;
 }
 
 .mini h3 {

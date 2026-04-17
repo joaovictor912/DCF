@@ -53,51 +53,11 @@ const ASSUMPTIONS_REQUIRED_FIELDS = [
   'terminalValueMethod'
 ];
 
-let companiesById = {
-  1: {
-    id: 1,
-    name: 'WEG S.A.',
-    ticker: 'WEGE3',
-    sector: 'Bens Industriais'
-  }
-};
+let companiesById = {};
 
-let marketDataByCompany = {
-  1: {
-    companyId: 1,
-    currentStockPrice: 39.8,
-    sharesOutstanding: 13044000000,
-    beta: 1.1,
-    totalDebt: 307000000000,
-    costOfDebt: 0.09,
-    effectiveTaxRate: 0.34,
-    cash: 93000000000,
-    netDebt: 214000000000,
-    revenue: 490000000000,
-    ebitda: 265000000000,
-    ebit: 195000000000,
-    capex: 74000000000,
-    depreciation: 70000000000,
-    workingCapital: -12000000000
-  }
-};
+let marketDataByCompany = {};
 
-let assumptionsByCompany = {
-  1: {
-    companyId: 1,
-    projectionYears: 5,
-    discountRate: 0.115,
-    riskFreeRate: 0.045,
-    marketRiskPremium: 0.055,
-    revenueGrowthByYear: [0.07, 0.06, 0.055, 0.05, 0.045],
-    projectedEbitdaMargin: 0.23,
-    capexPercentOfRevenue: 0.06,
-    workingCapitalChangePercentOfRevenue: 0.01,
-    perpetualGrowthRate: 0.03,
-    terminalValueMethod: 'GORDON',
-    exitMultiple: null
-  }
-};
+let assumptionsByCompany = {};
 
 let valuationsByCompany = {};
 

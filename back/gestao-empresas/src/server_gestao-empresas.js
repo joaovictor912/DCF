@@ -3,16 +3,24 @@ import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const EVENT_BUS_URL = process.env.EVENT_BUS_URL || 'http://localhost:3006';
+
+function publishEvent(eventType, data = {}) {
+  fetch(`${EVENT_BUS_URL}/publish`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ eventType, ...data })
+  }).catch((error) => {
+    console.warn(`[event-bus] Falha ao publicar ${eventType}:`, error.message);
+  });
+}
 
 app.use(cors());
 app.use(express.json());
 
-let companies = [
-  { id: 1, name: 'WEG S.A.', ticker: 'WEGE3', sector: 'Bens Industriais' },
-  { id: 2, name: 'Petrobras', ticker: 'PETR4', sector: 'Energia' }
-];
+let companies = [];
 
-let nextId = companies.length + 1;
+let nextId = 1;
 
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -52,7 +60,8 @@ app.post('/empresas', (req, res) => {
   };
 
   companies.push(newCompany);
-  return res.status(201).json(newCompany);
+  res.status(201).json(newCompany);
+  publishEvent('COMPANY_UPSERTED', { payload: newCompany });
 });
 
 app.delete('/empresas/:id', (req, res) => {
@@ -66,7 +75,8 @@ app.delete('/empresas/:id', (req, res) => {
   }
 
   companies = companies.filter((company) => company.id !== id);
-  return res.status(204).send();
+  res.status(204).send();
+  publishEvent('COMPANY_DELETED', { companyId: id });
 });
 
 app.listen(PORT, () => {

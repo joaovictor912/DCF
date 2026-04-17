@@ -3,6 +3,17 @@ import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3002;
+const EVENT_BUS_URL = process.env.EVENT_BUS_URL || 'http://localhost:3006';
+
+function publishEvent(eventType, data = {}) {
+  fetch(`${EVENT_BUS_URL}/publish`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ eventType, ...data })
+  }).catch((error) => {
+    console.warn(`[event-bus] Falha ao publicar ${eventType}:`, error.message);
+  });
+}
 
 app.use(cors());
 app.use(express.json());
@@ -25,66 +36,7 @@ const REQUIRED_FIELDS = [
   'workingCapital'
 ];
 
-const WACC_INPUT_FIELDS = [
-  'companyId',
-  'currentStockPrice',
-  'sharesOutstanding',
-  'beta',
-  'totalDebt',
-  'costOfDebt',
-  'effectiveTaxRate'
-];
-
-let marketDataByCompany = {
-  1: {
-    companyId: 1,
-    // Current stock quote used in equity market value for WACC.
-    currentStockPrice: 39.8,
-    // Total issued shares to compute market capitalization.
-    sharesOutstanding: 13044000000,
-    // Systematic risk used in CAPM.
-    beta: 1.1,
-    // Gross debt stock used in capital structure.
-    totalDebt: 307000000000,
-    // Average debt funding cost before tax.
-    costOfDebt: 0.09,
-    // Effective tax rate used in after-tax debt cost.
-    effectiveTaxRate: 0.34,
-    // Cash and cash equivalents from balance sheet.
-    cash: 93000000000,
-    // Net debt position (gross debt less cash).
-    netDebt: 214000000000,
-    // Last fiscal year net revenue baseline for projections.
-    revenue: 490000000000,
-    // Last fiscal year EBITDA for operating performance.
-    ebitda: 265000000000,
-    // Last fiscal year EBIT for operating profit after D&A.
-    ebit: 195000000000,
-    // Last fiscal year capital expenditures.
-    capex: 74000000000,
-    // Last fiscal year depreciation and amortization.
-    depreciation: 70000000000,
-    // Net working capital level, may be negative.
-    workingCapital: -12000000000
-  },
-  2: {
-    companyId: 2,
-    currentStockPrice: 14.2,
-    sharesOutstanding: 15800000000,
-    beta: 0.68,
-    totalDebt: 22000000000,
-    costOfDebt: 0.11,
-    effectiveTaxRate: 0.3,
-    cash: 16000000000,
-    netDebt: 6000000000,
-    revenue: 89000000000,
-    ebitda: 28500000000,
-    ebit: 20800000000,
-    capex: 6200000000,
-    depreciation: 4100000000,
-    workingCapital: 3500000000
-  }
-};
+let marketDataByCompany = {};
 
 function parseNumericField(value, fieldName) {
   const parsedValue = Number(value);
@@ -207,14 +159,6 @@ function validateAndNormalizeMarketData(payload, options = {}) {
   return { value: normalized };
 }
 
-function buildWaccInputs(entry) {
-  const response = {};
-  for (const field of WACC_INPUT_FIELDS) {
-    response[field] = entry[field];
-  }
-  return response;
-}
-
 app.get('/health', (req, res) => {
   res.status(200).json({
     service: 'ms-market-data',
@@ -244,22 +188,6 @@ app.get('/market-data/:companyId', (req, res) => {
   return res.status(200).json(entry);
 });
 
-app.get('/market-data/:companyId/wacc-inputs', (req, res) => {
-  const parsedCompanyId = parseCompanyIdParam(req.params.companyId);
-  if (parsedCompanyId.error) {
-    return res.status(400).json({ message: parsedCompanyId.error });
-  }
-
-  const entry = marketDataByCompany[parsedCompanyId.value];
-  if (!entry) {
-    return res.status(404).json({
-      message: 'Dados de mercado não encontrados para esta empresa.'
-    });
-  }
-
-  return res.status(200).json(buildWaccInputs(entry));
-});
-
 app.post('/market-data', (req, res) => {
   const normalized = validateAndNormalizeMarketData(req.body);
 
@@ -276,7 +204,8 @@ app.post('/market-data', (req, res) => {
   }
 
   marketDataByCompany[companyId] = normalized.value;
-  return res.status(201).json(normalized.value);
+  res.status(201).json(normalized.value);
+  publishEvent('MARKET_DATA_UPSERTED', { payload: normalized.value });
 });
 
 app.put('/market-data/:companyId', (req, res) => {
@@ -300,7 +229,8 @@ app.put('/market-data/:companyId', (req, res) => {
   }
 
   marketDataByCompany[companyId] = normalized.value;
-  return res.status(200).json(normalized.value);
+  res.status(200).json(normalized.value);
+  publishEvent('MARKET_DATA_UPSERTED', { payload: normalized.value });
 });
 
 app.delete('/market-data/:companyId', (req, res) => {
@@ -318,7 +248,8 @@ app.delete('/market-data/:companyId', (req, res) => {
   }
 
   delete marketDataByCompany[companyId];
-  return res.status(204).send();
+  res.status(204).send();
+  publishEvent('MARKET_DATA_DELETED', { companyId });
 });
 
 app.listen(PORT, () => {
