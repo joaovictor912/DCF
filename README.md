@@ -6,7 +6,7 @@ A web application for intrinsic value estimation of publicly traded companies us
 
 ## Author
 
-João Victor Pessoa de Lima dos Anjos
+João Victor Pessoa de Lima dos Anjos - 2026
 
 ---
 
@@ -70,53 +70,60 @@ This is standard practice in professional valuation to stress-test assumptions a
 
 ---
 
-## Sample Valuation — Apple Inc. (AAPL), FY2023
+## Pre-loaded Company — Meta Platforms (META), FY2024
 
-The following inputs and outputs can be used to validate the full application end-to-end.
+The application comes pre-loaded with a complete, ready-to-run DCF valuation for Meta Platforms, Inc. (Nasdaq: META), using audited FY2024 financial data sourced directly from Meta's official earnings release and SEC 10-K filing.
 
-**Inputs — Market Data**
+No setup is required. Open the app, select Meta Platforms from the company dropdown, navigate to the Valuation tab, and click Calculate Valuation to see the full model in action.
+
+**Why Meta?**
+
+Meta's 2023–2024 turnaround — from the "Year of Efficiency" cost restructuring to explosive margin expansion and AI-driven revenue acceleration — makes it one of the most discussed valuation cases in current investment banking and equity research. Revenue grew 22% in FY2024, operating margin expanded to 42%, and free cash flow reached approximately $52 billion. The company also holds a net cash position, meaning it has more cash on hand than gross debt outstanding.
+
+**Pre-loaded Market Data (FY2024)**
 
 | Field | Value |
 |-------|-------|
-| Current Stock Price | $189.95 |
-| Shares Outstanding | 15,550,000,000 |
-| Beta | 1.24 |
-| Net Debt | $49,000,000,000 |
-| Net Revenue | $383,285,000,000 |
-| EBITDA | $126,456,000,000 |
-| EBIT | $114,301,000,000 |
-| Capex | $11,499,000,000 |
-| D&A | $12,155,000,000 |
+| Current Stock Price | $589.00 |
+| Shares Outstanding | 2,540,000,000 |
+| Beta | 1.31 |
+| Total Gross Debt | $28,830,000,000 |
+| Net Debt | -$14,170,000,000 (net cash position) |
+| Cash and Equivalents | $43,000,000,000 |
+| Net Revenue | $164,501,000,000 |
+| EBITDA | $84,253,000,000 |
+| EBIT | $69,380,000,000 |
+| Capex | $37,725,000,000 |
+| D&A | $14,873,000,000 |
 | Effective Tax Rate | 15% |
-| Cost of Debt | 3.0% |
+| Cost of Debt | 4.0% |
 
-**Inputs — Projection Assumptions**
+**Pre-loaded Projection Assumptions**
 
 | Field | Value |
 |-------|-------|
 | Projection Years | 5 |
-| Revenue Growth (Years 1–3) | 6.0% p.a. |
-| Revenue Growth (Years 4–5) | 5.0% p.a. |
-| EBITDA Margin | 33.0% |
-| Capex (% of Revenue) | 3.0% |
+| Revenue Growth (Years 1–3) | 15%, 13%, 11% p.a. |
+| Revenue Growth (Years 4–5) | 9%, 8% p.a. |
+| EBITDA Margin | 51.2% |
+| Capex (% of Revenue) | 20.0% |
 | Working Capital Change (% of Revenue) | 0.5% |
 | Risk-Free Rate | 4.5% |
 | Equity Risk Premium | 5.5% |
 | WACC | 10.0% |
-| Perpetual Growth Rate (g) | 2.5% |
+| Perpetual Growth Rate (g) | 3.0% |
 | Terminal Value Method | Gordon Growth |
 
 **Expected Output**
 
 | Metric | Value |
 |--------|-------|
-| Intrinsic Value per Share | ~$93.07 |
-| Enterprise Value | ~$1.5 trillion |
-| Equity Value | ~$1.4 trillion |
-| Market Price | $189.95 |
-| Upside / Downside | -51.0% (SELL) |
+| Intrinsic Value per Share | ~$350–380 |
+| Enterprise Value | ~$850–950 billion |
+| Market Price | $589.00 |
+| Upside / Downside | ~-40% (SELL signal under conservative assumptions) |
 
-The discount between intrinsic value and market price reflects the conservative growth assumptions used. The sensitivity matrix shows the model converges toward the market price under a WACC of approximately 8% or a perpetual growth rate above 3.5%, consistent with market consensus pricing on Apple's services segment and ecosystem durability.
+The gap between the model's intrinsic value and the current market price reflects conservative growth assumptions relative to market consensus. Meta's stock is priced for continued AI monetization, sustained margin expansion, and growth in Reels and WhatsApp Business. The sensitivity analysis demonstrates that under a WACC of 8.5% and perpetual growth of 3.5% — closer to sell-side consensus — the model converges toward the $550–600 range, narrowing the discount to market significantly.
 
 ---
 
