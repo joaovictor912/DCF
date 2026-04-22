@@ -25,10 +25,10 @@ The application implements a standard FCFF-based DCF model, consistent with the 
 Starting from projected revenue, the model builds down to FCFF year by year:
 
 ```
-Revenue x EBITDA Margin              = EBITDA
-EBITDA - D&A                         = EBIT
-EBIT x (1 - Effective Tax Rate)      = NOPAT
-NOPAT + D&A - Capex - Change in NWC  = FCFF
+EBITDA = Revenue x EBITDA Margin
+EBIT = EBITDA - D&A
+NOPAT = EBIT x (1 - Effective Tax Rate)
+FCFF = NOPAT + D&A - Capex - Change in NWC
 ```
 
 **Discount Rate (WACC)**
@@ -36,8 +36,8 @@ NOPAT + D&A - Capex - Change in NWC  = FCFF
 The cost of capital is calculated via the CAPM framework:
 
 ```
-Ke   = Rf + Beta x Equity Risk Premium
-Kd   = Cost of Debt x (1 - Tax Rate)
+Ke = Rf + Beta x Equity Risk Premium
+Kd = Cost of Debt x (1 - Tax Rate)
 WACC = (E/V) x Ke + (D/V) x Kd
 ```
 
@@ -51,9 +51,9 @@ The model supports two terminal value methods:
 **From Enterprise Value to Equity Value**
 
 ```
-Sum of discounted FCFFs + PV of Terminal Value  =  Enterprise Value (EV)
-EV - Net Debt                                   =  Equity Value
-Equity Value / Shares Outstanding               =  Intrinsic Value per Share
+Enterprise Value (EV) = Sum of discounted FCFFs + PV of Terminal Value
+Equity Value = Enterprise Value (EV) - Net Debt
+Intrinsic Value per Share = Equity Value / Shares Outstanding
 ```
 
 ---
