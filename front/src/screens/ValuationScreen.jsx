@@ -27,7 +27,7 @@ function ValuationScreen({
             onClick={handleRecalculateValuation}
             disabled={valuationLoading}
           >
-            {valuationLoading ? 'Calculando...' : 'Recalcular valuation'}
+            {valuationLoading ? 'Calculating...' : 'Recalculate valuation'}
           </button>
         </div>
         {valuationError && <p className="feedback error">{valuationError}</p>}
@@ -35,13 +35,13 @@ function ValuationScreen({
       </section>
 
       <section className="table-section">
-        <h2>Fluxo de Caixa Descontado</h2>
+        <h2>Discounted Cash Flow</h2>
         <table>
           <thead>
             <tr>
-              <th>Métrica</th>
+              <th>Metric</th>
               {projectedCashFlows.map((yearData) => (
-                <th key={`header-year-${yearData.year}`}>Ano {yearData.year}</th>
+                <th key={`header-year-${yearData.year}`}>Year {yearData.year}</th>
               ))}
               <th>Total</th>
             </tr>
@@ -49,12 +49,12 @@ function ValuationScreen({
           <tbody>
             {projectedCashFlows.length === 0 ? (
               <tr>
-                <td colSpan="2">Sem dados de fluxo de caixa carregados.</td>
+                <td colSpan="2">No cash flow data loaded.</td>
               </tr>
             ) : (
               <>
                 <tr>
-                  <td>Receita</td>
+                  <td>Revenue</td>
                   {projectedCashFlows.map((yearData) => (
                     <td key={`revenue-${yearData.year}`}>{formatMoney(yearData.revenue)}</td>
                   ))}
@@ -75,22 +75,22 @@ function ValuationScreen({
                   <td>{formatMoney(totalNominalFcff)}</td>
                 </tr>
                 <tr>
-                  <td>FCFF a Valor Presente</td>
+                  <td>FCFF at Present Value</td>
                   {projectedCashFlows.map((yearData) => (
                     <td key={`pv-fcff-${yearData.year}`}>{formatMoney(yearData.presentValueFcff)}</td>
                   ))}
                   <td>{formatMoney(valuationResult?.valuation?.discountedCashFlows)}</td>
                 </tr>
                 <tr>
-                  <td>Valor Terminal a VP</td>
+                  <td>Terminal Value at PV</td>
                   <td colSpan={projectedCashFlows.length}>
-                    Método: {valuationResult?.terminalValue?.method || '-'}
+                    Method: {valuationResult?.terminalValue?.method || '-'}
                   </td>
                   <td>{formatMoney(valuationResult?.terminalValue?.presentValueTerminalValue)}</td>
                 </tr>
                 <tr>
                   <td>Enterprise Value</td>
-                  <td colSpan={projectedCashFlows.length}>Soma FCFF VP + Valor Terminal VP</td>
+                  <td colSpan={projectedCashFlows.length}>Sum of FCFF PV + Terminal Value PV</td>
                   <td>{formatMoney(summary.exitValue)}</td>
                 </tr>
               </>
@@ -101,7 +101,7 @@ function ValuationScreen({
 
       <section className="valuation-box-wrap">
         <article className="panel valuation-box">
-          <h3>Caminho do Valuation</h3>
+          <h3>Valuation Path</h3>
 
           <div className="valuation-row">
             <span>Enterprise Value:</span>
@@ -112,7 +112,7 @@ function ValuationScreen({
             <strong>{formatRate(rateComparison.manualDiscountRate)}</strong>
           </div>
           <div className="valuation-row">
-            <span>WACC de referência (CAPM):</span>
+            <span>Reference WACC (CAPM):</span>
             <strong>{formatRate(rateComparison.waccReference)}</strong>
           </div>
           <div className="valuation-row">
@@ -120,7 +120,7 @@ function ValuationScreen({
             <strong>{formatRate(rateComparison.spread)}</strong>
           </div>
           <div className="valuation-row">
-            <span>Dívida Líquida:</span>
+            <span>Net Debt:</span>
             <strong>{formatMoney(summary.netDebt)}</strong>
           </div>
           <div className="valuation-row">
@@ -128,35 +128,35 @@ function ValuationScreen({
             <strong>{formatMoney(summary.equityValue)}</strong>
           </div>
           <div className="valuation-row">
-            <span>Ações:</span>
+            <span>Shares:</span>
             <strong>{formatNumber(summary.sharesOutstanding)}</strong>
           </div>
           <div className="valuation-row">
-            <span>Preço Justo:</span>
+            <span>Fair Price:</span>
             <strong>{formatMoney(summary.intrinsicPerShare)}</strong>
           </div>
         </article>
 
         <div className="summary-grid">
           <article className="panel mini">
-            <h3>Valor Intrínseco</h3>
-            <p>Valor patrimonial/ação</p>
+            <h3>Intrinsic Value</h3>
+            <p>Equity value/share</p>
             <div className="mini-main">
               <strong>{formatMoney(summary.intrinsicPerShare)}</strong>
             </div>
           </article>
 
           <article className="panel mini">
-            <h3>Valor de Mercado</h3>
-            <p>Valor patrimonial/ação</p>
+            <h3>Market Value</h3>
+            <p>Equity value/share</p>
             <div className="mini-main">
               <strong>{formatMoney(summary.marketPerShare)}</strong>
             </div>
           </article>
 
           <article className="panel mini">
-            <h3>Taxa de Retorno - Upside(%)</h3>
-            <p>Potencial de Alta do Preço-Alvo</p>
+            <h3>Return Rate - Upside (%)</h3>
+            <p>Target price upside potential</p>
             <div className="mini-main">
               <strong>{formatRate(upsidePercent)} ({upsideRecommendation})</strong>
             </div>

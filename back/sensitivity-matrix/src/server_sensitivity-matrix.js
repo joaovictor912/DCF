@@ -3,7 +3,7 @@ import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3005;
-const VALUATION_ENGINE_URL = process.env.VALUATION_ENGINE_URL || 'http://localhost:3004';
+const VALUATION_ENGINE_URL = process.env.VALUATION_ENGINE_URL || 'http://localhost:3005';
 
 const DEFAULT_WACC_STEPS = [-0.02, -0.01, 0, 0.01, 0.02];
 const DEFAULT_G_STEPS = [-0.01, -0.005, 0, 0.005, 0.01];

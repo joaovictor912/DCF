@@ -19,11 +19,11 @@ function AssumptionsScreen({
   return (
     <section className="company-section">
       <article className="panel assumptions">
-        <h2>Premissas de Projeção</h2>
+        <h2>Projection Assumptions</h2>
 
         <form className="assumption-list" onSubmit={handleAssumptionsSubmit}>
           <label className="full-width">
-            <span>Empresa</span>
+            <span>Company</span>
             <select 
               name="companyId"
               value={assumptionsForm.companyId}
@@ -31,7 +31,7 @@ function AssumptionsScreen({
               required
             >
               {companies.length === 0 ? (
-                <option value="">Cadastre uma empresa primeiro</option>
+                <option value="">Create a company first</option>
               ) : (
                 companies.map((company) => (
                   <option key={company.id} value={company.id}>
@@ -43,7 +43,7 @@ function AssumptionsScreen({
           </label>
 
           <label>
-            <span>Anos de Projeção</span>
+            <span>Projection Years</span>
             <input
               name="projectionYears"
               type="number"
@@ -56,7 +56,7 @@ function AssumptionsScreen({
           </label>
 
           <label>
-            <span>Taxa de Desconto (0 a 1)</span>
+            <span>Discount Rate (0 to 1)</span>
             <input
               name="discountRate"
               type="number"
@@ -68,31 +68,31 @@ function AssumptionsScreen({
           </label>
 
           <label>
-            <span>Taxa Livre de Risco (opcional)</span>
+            <span>Risk-Free Rate (optional)</span>
             <input
               name="riskFreeRate"
               type="number"
               step="any"
-              placeholder="Padrão: 0.045 (4,5%)"
+              placeholder="Default: 0.045 (4.5%)"
               value={assumptionsForm.riskFreeRate}
               onChange={handleAssumptionChange}
             />
           </label>
 
           <label>
-            <span>Prêmio de Risco de Mercado (opcional)</span>
+            <span>Market Risk Premium (optional)</span>
             <input
               name="marketRiskPremium"
               type="number"
               step="any"
-              placeholder="Padrão: 0.055 (5,5%)"
+              placeholder="Default: 0.055 (5.5%)"
               value={assumptionsForm.marketRiskPremium}
               onChange={handleAssumptionChange}
             />
           </label>
 
           <label>
-            <span>Var. Capital de Giro (% Receita)</span>
+            <span>Working Capital Change (% Revenue)</span>
             <input
               name="workingCapitalChangePercentOfRevenue"
               type="number"
@@ -104,7 +104,7 @@ function AssumptionsScreen({
           </label>
 
           <label>
-            <span>Método Valor Terminal</span>
+            <span>Terminal Value Method</span>
             <select
               name="terminalValueMethod"
               value={assumptionsForm.terminalValueMethod}
@@ -117,7 +117,7 @@ function AssumptionsScreen({
           </label>
 
           <label>
-            <span>Margem EBITDA Projetada</span>
+            <span>Projected EBITDA Margin</span>
             <input
               name="projectedEbitdaMargin"
               type="number"
@@ -129,10 +129,10 @@ function AssumptionsScreen({
           </label>
 
           <label>
-            <span>Cresc. Receita por Ano</span>
+            <span>Revenue Growth by Year</span>
             <input
               name="revenueGrowthByYear"
-              placeholder="Ex: 0.1,0.08,0.07"
+              placeholder="Example: 0.1,0.08,0.07"
               value={assumptionsForm.revenueGrowthByYear}
               onChange={handleAssumptionChange}
               required
@@ -140,7 +140,7 @@ function AssumptionsScreen({
           </label>
 
           <label>
-            <span>Capex (% da Receita)</span>
+            <span>Capex (% of Revenue)</span>
             <input
               name="capexPercentOfRevenue"
               type="number"
@@ -152,7 +152,7 @@ function AssumptionsScreen({
           </label>
 
           <label>
-            <span>Cresc. Perpetuidade (g)</span>
+            <span>Perpetual Growth (g)</span>
             <input
               name="perpetualGrowthRate"
               type="number"
@@ -164,7 +164,7 @@ function AssumptionsScreen({
           </label>
 
           <label>
-            <span>Múltiplo de Saída</span>
+            <span>Exit Multiple</span>
             <input
               name="exitMultiple"
               type="number"
@@ -178,7 +178,7 @@ function AssumptionsScreen({
 
           <div className="inline-actions assumption-actions full-width">
             <button type="submit" disabled={assumptionsLoading || companies.length === 0}>
-              {assumptionsLoading ? 'Salvando...' : 'Salvar premissas'}
+              {assumptionsLoading ? 'Saving...' : 'Save assumptions'}
             </button>
             <button
               type="button"
@@ -186,7 +186,7 @@ function AssumptionsScreen({
               onClick={handleRecalculateValuation}
               disabled={valuationLoading || companies.length === 0}
             >
-              {valuationLoading ? 'Calculando...' : 'Calcular valuation'}
+              {valuationLoading ? 'Calculating...' : 'Calculate valuation'}
             </button>
           </div>
 
@@ -198,26 +198,26 @@ function AssumptionsScreen({
       </article>
 
       <article className="panel company-panel">
-        <h2>Premissas Salvas</h2>
+        <h2>Saved Assumptions</h2>
 
         <table>
           <thead>
             <tr>
-              <th>Empresa</th>
-              <th>Anos</th>
+              <th>Company</th>
+              <th>Years</th>
               <th>Discount Rate</th>
               <th>Rf</th>
               <th>MRP</th>
               <th>g</th>
-              <th>Método TV</th>
-              <th>Múltiplo</th>
+              <th>TV Method</th>
+              <th>Multiple</th>
               <th className="action-cell"></th>
             </tr>
           </thead>
           <tbody>
             {assumptionsList.length === 0 ? (
               <tr>
-                <td colSpan="9">Sem premissas cadastradas.</td>
+                <td colSpan="9">No assumptions saved.</td>
               </tr>
             ) : (
               assumptionsList.map((entry) => (
@@ -235,8 +235,8 @@ function AssumptionsScreen({
                       type="button"
                       className="delete-company-btn"
                       onClick={() => handleAssumptionsDelete(entry.companyId)}
-                      title="Remover premissas"
-                      aria-label={`Remover premissas de ${findCompanyLabel(entry.companyId)}`}
+                      title="Delete assumptions"
+                      aria-label={`Delete assumptions for ${findCompanyLabel(entry.companyId)}`}
                     >
                       ×
                     </button>

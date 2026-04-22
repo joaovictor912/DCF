@@ -9,12 +9,12 @@ import ValuationScreen from './screens/ValuationScreen';
 import SensitivityScreen from './screens/SensitivityScreen';
 
 const SCREEN_DEFINITIONS = [
-  { id: 'home', label: 'Tela Principal' },
-  { id: 'companies', label: 'Gestão de Empresas' },
-  { id: 'market-data', label: 'Dados de Mercado' },
-  { id: 'assumptions', label: 'Premissas e Projeção' },
+  { id: 'home', label: 'Home' },
+  { id: 'companies', label: 'Company Management' },
+  { id: 'market-data', label: 'Market Data' },
+  { id: 'assumptions', label: 'Assumptions & Projections' },
   { id: 'valuation', label: 'Valuation' },
-  { id: 'sensitivity', label: 'Sensibilidade' }
+  { id: 'sensitivity', label: 'Sensitivity' }
 ];
 
 function App() {
@@ -180,8 +180,8 @@ function App() {
     return valuationResult.projectedCashFlows;
   }, [selectedCompanyId, valuationResult]);
 
-  const extractApiErrorMessage = (error, fallbackMessage) => {
-    return error?.response?.data?.message || fallbackMessage;
+  const extractApiErrorMessage = (_error, fallbackMessage) => {
+    return fallbackMessage;
   };
 
   const syncAndRecalculateValuation = async (companyId, options = {}) => {
@@ -189,7 +189,7 @@ function App() {
 
     if (!companyId) {
       if (!silent) {
-        setValuationError('Selecione uma empresa para calcular o valuation.');
+        setValuationError('Select a company to calculate valuation.');
       }
       return null;
     }
@@ -209,13 +209,13 @@ function App() {
       setValuationResult(response.data.valuation);
 
       if (!silent) {
-        setValuationSuccess('Valuation recalculado com sucesso.');
+        setValuationSuccess('Valuation recalculated successfully.');
       }
 
       return response.data.valuation;
     } catch (error) {
       if (!silent) {
-        setValuationError(extractApiErrorMessage(error, 'Erro ao calcular valuation.'));
+        setValuationError(extractApiErrorMessage(error, 'Error calculating valuation.'));
       }
       return null;
     } finally {
@@ -256,7 +256,7 @@ function App() {
       setSensitivityResult(response.data);
     } catch (error) {
       setSensitivityResult(null);
-      setSensitivityError(extractApiErrorMessage(error, 'Erro ao calcular sensibilidade.'));
+      setSensitivityError(extractApiErrorMessage(error, 'Error calculating sensitivity.'));
     } finally {
       setSensitivityLoading(false);
     }
@@ -267,7 +267,7 @@ function App() {
       const response = await axios.get(`${API_BASE_URL}/empresas`);
       setCompanies(response.data);
     } catch {
-      setCompanyError('Não foi possível carregar as empresas. Verifique se o microsserviço está ativo.');
+      setCompanyError('Could not load companies. Check if the microservice is running.');
     }
   };
 
@@ -277,7 +277,7 @@ function App() {
       const sorted = [...response.data].sort((a, b) => a.companyId - b.companyId);
       setMarketDataList(sorted);
     } catch {
-      setMarketDataError('Não foi possível carregar o Market Data. Verifique se o microsserviço está ativo.');
+      setMarketDataError('Could not load market data. Check if the microservice is running.');
     }
   };
 
@@ -287,7 +287,7 @@ function App() {
       const sorted = [...response.data].sort((a, b) => a.companyId - b.companyId);
       setAssumptionsList(sorted);
     } catch {
-      setAssumptionsError('Não foi possível carregar as premissas. Verifique se o microsserviço está ativo.');
+      setAssumptionsError('Could not load assumptions. Check if the microservice is running.');
     }
   };
 
@@ -353,7 +353,7 @@ function App() {
     const perpetualGrowthRate = Number(String(assumptionsForm.perpetualGrowthRate).replace(',', '.'));
 
     if (!companyId) {
-      setAssumptionsError('Selecione uma empresa para salvar as premissas.');
+      setAssumptionsError('Select a company to save assumptions.');
       return;
     }
 
@@ -365,7 +365,7 @@ function App() {
     ) {
       setAssumptionsSuccess('');
       setAssumptionsError(
-        'No metodo GORDON, a Cresc. Perpetuidade (g) deve ser menor que a Taxa de Desconto.'
+        'In GORDON method, Perpetual Growth (g) must be lower than the Discount Rate.'
       );
       return;
     }
@@ -414,10 +414,10 @@ function App() {
 
       await syncAndRecalculateValuation(companyId, { silent: true });
 
-      setAssumptionsSuccess(existing ? 'Premissas atualizadas com sucesso.' : 'Premissas cadastradas com sucesso.');
+      setAssumptionsSuccess(existing ? 'Assumptions updated successfully.' : 'Assumptions saved successfully.');
       resetAssumptionsForm();
     } catch (error) {
-      const message = error?.response?.data?.message || 'Erro ao salvar premissas.';
+      const message = extractApiErrorMessage(error, 'Error saving assumptions.');
       setAssumptionsError(message);
     } finally {
       setAssumptionsLoading(false);
@@ -436,9 +436,9 @@ function App() {
         setValuationResult(null);
       }
 
-      setAssumptionsSuccess('Premissas removidas com sucesso.');
+      setAssumptionsSuccess('Assumptions deleted successfully.');
     } catch (error) {
-      const message = error?.response?.data?.message || 'Erro ao remover premissas.';
+      const message = extractApiErrorMessage(error, 'Error deleting assumptions.');
       setAssumptionsError(message);
     }
   };
@@ -468,10 +468,12 @@ function App() {
       const response = await axios.post(`${API_BASE_URL}/empresas`, payload);
       setCompanies((prev) => [...prev, response.data]);
       setCompanyForm({ name: '', ticker: '', sector: '' });
-      setCompanySuccess('Empresa cadastrada com sucesso.');
+      setCompanySuccess('Company created successfully.');
     } catch (error) {
-      const message = error?.response?.data?.message
-        || 'Erro ao cadastrar empresa. Verifique se o microsserviço está ativo.';
+      const message = extractApiErrorMessage(
+        error,
+        'Error creating company. Check if the microservice is running.'
+      );
       setCompanyError(message);
     } finally {
       setCompanyLoading(false);
@@ -490,9 +492,9 @@ function App() {
         setValuationResult(null);
       }
 
-      setCompanySuccess('Empresa removida com sucesso.');
+      setCompanySuccess('Company deleted successfully.');
     } catch (error) {
-      const message = error?.response?.data?.message || 'Erro ao remover empresa.';
+      const message = extractApiErrorMessage(error, 'Error deleting company.');
       setCompanyError(message);
     }
   };
@@ -548,7 +550,7 @@ function App() {
     };
 
     if (!companyId) {
-      setMarketDataError('Selecione uma empresa para salvar o Market Data.');
+      setMarketDataError('Select a company to save market data.');
       return;
     }
 
@@ -566,10 +568,10 @@ function App() {
 
       await syncAndRecalculateValuation(companyId, { silent: true });
 
-      setMarketDataSuccess('Dados de mercado cadastrados com sucesso.');
+      setMarketDataSuccess('Market data saved successfully.');
       resetMarketDataForm();
     } catch (error) {
-      const message = error?.response?.data?.message || 'Erro ao salvar dados de mercado.';
+      const message = extractApiErrorMessage(error, 'Error saving market data.');
       setMarketDataError(message);
     } finally {
       setMarketDataLoading(false);
@@ -588,9 +590,9 @@ function App() {
         setValuationResult(null);
       }
 
-      setMarketDataSuccess('Dados de mercado removidos com sucesso.');
+      setMarketDataSuccess('Market data deleted successfully.');
     } catch (error) {
-      const message = error?.response?.data?.message || 'Erro ao remover dados de mercado.';
+      const message = extractApiErrorMessage(error, 'Error deleting market data.');
       setMarketDataError(message);
     }
   };
@@ -598,7 +600,7 @@ function App() {
   const findCompanyLabel = (companyId) => {
     const company = companies.find((item) => item.id === companyId);
     if (!company) {
-      return `Empresa #${companyId}`;
+      return `Company #${companyId}`;
     }
     return `${company.name} (${company.ticker})`;
   };
@@ -606,7 +608,7 @@ function App() {
   const projectionGrowthData = useMemo(() => {
     if (projectedCashFlows.length > 0) {
       return projectedCashFlows.map((item) => ({
-        label: `Ano ${item.year}`,
+        label: `Year ${item.year}`,
         value: Number(item.growthRate) || 0
       }));
     }
@@ -622,22 +624,22 @@ function App() {
     const values = rawValues.slice(0, projectionYears > 0 ? projectionYears : rawValues.length);
 
     return values.map((value, index) => ({
-      label: `Ano ${index + 1}`,
+      label: `Year ${index + 1}`,
       value
     }));
   }, [assumptionsForm.projectionYears, assumptionsForm.revenueGrowthByYear, projectedCashFlows]);
 
   const marketComparisonData = useMemo(() => {
     const values = [
-      { label: 'Valor de Mercado', value: Number(summary.marketPerShare) },
-      { label: 'Potencial de Alta', value: Number(summary.upside) },
-      { label: 'Valor Intrínseco', value: Number(summary.intrinsicPerShare) }
+      { label: 'Market Value', value: Number(summary.marketPerShare) },
+      { label: 'Upside Potential', value: Number(summary.upside) },
+      { label: 'Intrinsic Value', value: Number(summary.intrinsicPerShare) }
     ];
 
     return values.filter((item) => Number.isFinite(item.value));
   }, [summary.intrinsicPerShare, summary.marketPerShare, summary.upside]);
 
-  // Mantem as barras do grafico dentro de um tamanho minimo e maximo.
+  // Keeps chart bars within a minimum and maximum visual size.
   const getNormalizedBarHeight = (value, maxAbsValue) => {
     const MIN_HEIGHT = 20;
     const MAX_HEIGHT = 160;
@@ -667,7 +669,7 @@ function App() {
     ? Math.max(...marketComparisonData.map((item) => Math.abs(item.value)))
     : 1;
 
-  // Define SELL, HOLD ou BUY a partir do upside percentual.
+  // Derives SELL, HOLD, or BUY from upside percentage.
   const marketPerShareForUpside = Number(summary.marketPerShare);
   const upsideValue = Number(summary.upside);
 
@@ -683,24 +685,23 @@ function App() {
     }
 
     if (upsidePercent < -0.1) {
-      return 'VENDER';
+      return 'SELL';
     }
 
     if (upsidePercent > 0.1) {
-      return 'COMPRAR';
+      return 'BUY';
     }
 
-    return 'MANTER';
+    return 'HOLD';
   })();
 
-  const formatCompactUnit = (value, singularLabel, pluralLabel) => {
+  const formatCompactUnit = (value, unitLabel) => {
     const rounded = Number(value.toFixed(1));
-    const label = Math.abs(rounded) === 1 ? singularLabel : pluralLabel;
 
-    return `${rounded.toLocaleString('pt-BR', {
+    return `${rounded.toLocaleString('en-US', {
       minimumFractionDigits: 1,
       maximumFractionDigits: 1
-    })} ${label}`;
+    })} ${unitLabel}`;
   };
 
   const formatNumber = (value) => {
@@ -717,19 +718,19 @@ function App() {
       const absValue = Math.abs(parsedValue);
 
       if (absValue >= 1e12) {
-        return formatCompactUnit(parsedValue / 1e12, 'trilhão', 'trilhões');
+        return formatCompactUnit(parsedValue / 1e12, 'trillion');
       }
 
       if (absValue >= 1e9) {
-        return formatCompactUnit(parsedValue / 1e9, 'bilhão', 'bilhões');
+        return formatCompactUnit(parsedValue / 1e9, 'billion');
       }
 
       if (absValue >= 1e6) {
-        return formatCompactUnit(parsedValue / 1e6, 'milhão', 'milhões');
+        return formatCompactUnit(parsedValue / 1e6, 'million');
       }
     }
 
-    return parsedValue.toLocaleString('pt-BR');
+    return parsedValue.toLocaleString('en-US');
   };
 
   const formatMoney = (value) => {
@@ -747,24 +748,24 @@ function App() {
 
     if (compactNumberDisplay) {
       if (absValue >= 1e12) {
-        return `R$ ${sign}${formatCompactUnit(absValue / 1e12, 'trilhão', 'trilhões')}`;
+        return `${sign}$${formatCompactUnit(absValue / 1e12, 'trillion')}`;
       }
 
       if (absValue >= 1e9) {
-        return `R$ ${sign}${formatCompactUnit(absValue / 1e9, 'bilhão', 'bilhões')}`;
+        return `${sign}$${formatCompactUnit(absValue / 1e9, 'billion')}`;
       }
 
       if (absValue >= 1e6) {
-        return `R$ ${sign}${formatCompactUnit(absValue / 1e6, 'milhão', 'milhões')}`;
+        return `${sign}$${formatCompactUnit(absValue / 1e6, 'million')}`;
       }
     }
 
-    const absoluteFormatted = absValue.toLocaleString('pt-BR', {
+    const absoluteFormatted = absValue.toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
 
-    return `R$ ${sign}${absoluteFormatted}`;
+    return `${sign}$${absoluteFormatted}`;
   };
 
   const handleSelectedCompanyChange = (event) => {
@@ -777,7 +778,7 @@ function App() {
 
   const getActiveScreenTitle = () => {
     const currentScreen = SCREEN_DEFINITIONS.find((item) => item.id === activeScreen);
-    return currentScreen ? currentScreen.label : 'Tela Principal';
+    return currentScreen ? currentScreen.label : 'Home';
   };
 
   const renderActiveScreen = () => {
@@ -888,10 +889,10 @@ function App() {
   return (
     <main className="dcf-page">
       <header className="top-header">
-        <div className="brand">Decision DCF - Plataforma de Valuation</div>
+        <div className="brand">Decision DCF - Valuation Platform</div>
         <div className="top-header-controls">
           <label className="company-selector" htmlFor="global-company-selector">
-            Empresa
+            Company
             <select
               id="global-company-selector"
               value={assumptionsForm.companyId}
@@ -899,7 +900,7 @@ function App() {
               disabled={companies.length === 0}
             >
               {companies.length === 0 ? (
-                <option value="">Sem empresas</option>
+                <option value="">No companies</option>
               ) : (
                 companies.map((company) => (
                   <option key={company.id} value={company.id}>
@@ -916,7 +917,7 @@ function App() {
               checked={compactNumberDisplay}
               onChange={(event) => setCompactNumberDisplay(event.target.checked)}
             />
-            Exibir valores compactos
+            Show compact values
           </label>
           <div className="brand right">2026</div>
         </div>
@@ -924,7 +925,7 @@ function App() {
 
       <div className="title-strip">{getActiveScreenTitle()}</div>
 
-      <nav className="screen-nav" aria-label="Navegação de telas">
+      <nav className="screen-nav" aria-label="Screen navigation">
         {SCREEN_DEFINITIONS.map((screen) => (
           <button
             key={screen.id}

@@ -11,12 +11,12 @@ function CompaniesScreen({
   return (
     <section className="company-section">
       <article className="panel company-panel">
-        <h2>Catálogo de Empresas</h2>
+        <h2>Company Catalog</h2>
 
         <form className="company-form" onSubmit={handleCompanySubmit}>
           <input
             name="name"
-            placeholder="Nome da empresa"
+            placeholder="Company name"
             value={companyForm.name}
             onChange={handleCompanyChange}
             required
@@ -30,13 +30,13 @@ function CompaniesScreen({
           />
           <input
             name="sector"
-            placeholder="Setor"
+            placeholder="Sector"
             value={companyForm.sector}
             onChange={handleCompanyChange}
             required
           />
           <button type="submit" disabled={companyLoading}>
-            {companyLoading ? 'Salvando...' : 'Cadastrar empresa'}
+            {companyLoading ? 'Saving...' : 'Create company'}
           </button>
         </form>
 
@@ -47,16 +47,16 @@ function CompaniesScreen({
           <thead>
             <tr>
               <th>ID</th>
-              <th>Nome</th>
+              <th>Name</th>
               <th>Ticker</th>
-              <th>Setor</th>
+              <th>Sector</th>
               <th className="action-cell"></th>
             </tr>
           </thead>
           <tbody>
             {companies.length === 0 ? (
               <tr>
-                <td colSpan="5">Sem empresas cadastradas.</td>
+                <td colSpan="5">No companies saved.</td>
               </tr>
             ) : (
               companies.map((company) => (
@@ -70,8 +70,8 @@ function CompaniesScreen({
                       type="button"
                       className="delete-company-btn"
                       onClick={() => handleCompanyDelete(company.id)}
-                      title="Remover empresa"
-                      aria-label={`Remover ${company.name}`}
+                      title="Delete company"
+                      aria-label={`Delete ${company.name}`}
                     >
                       ×
                     </button>

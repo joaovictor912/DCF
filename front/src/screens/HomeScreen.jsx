@@ -39,24 +39,24 @@ function HomeScreen({
     <>
       <section className="home-overview-grid">
         <article className="panel mini">
-          <h3>Empresas Cadastradas</h3>
-          <p>Microsserviço Gestão de Empresas</p>
+          <h3>Registered Companies</h3>
+          <p>Company Management microservice</p>
           <div className="mini-main">
             <strong>{companies.length}</strong>
           </div>
         </article>
 
         <article className="panel mini">
-          <h3>Dados de Mercado</h3>
-          <p>Registros disponíveis para valuation</p>
+          <h3>Market Data</h3>
+          <p>Records available for valuation</p>
           <div className="mini-main">
             <strong>{marketDataList.length}</strong>
           </div>
         </article>
 
         <article className="panel mini">
-          <h3>Premissas Salvas</h3>
-          <p>Premissas configuradas por empresa</p>
+          <h3>Saved Assumptions</h3>
+          <p>Assumptions configured by company</p>
           <div className="mini-main">
             <strong>{assumptionsList.length}</strong>
           </div>
@@ -65,30 +65,30 @@ function HomeScreen({
 
       <section className="top-grid">
         <article className="panel chart-panel">
-          <h2>Resumo da Empresa Selecionada</h2>
+          <h2>Selected Company Summary</h2>
           <div className="valuation-row">
-            <span>Empresa:</span>
+            <span>Company:</span>
             <strong>{selectedCompanyId ? findCompanyLabel(selectedCompanyId) : '-'}</strong>
           </div>
           <div className="valuation-row">
-            <span>Valor Intrínseco/ação:</span>
+            <span>Intrinsic Value/share:</span>
             <strong>{formatMoney(summary.intrinsicPerShare)}</strong>
           </div>
           <div className="valuation-row">
-            <span>Valor de Mercado/ação:</span>
+            <span>Market Value/share:</span>
             <strong>{formatMoney(summary.marketPerShare)}</strong>
           </div>
           <div className="valuation-row">
             <span>Upside:</span>
-            <strong>{formatRate(upsidePercent)} ({upsideRecommendation})</strong>
+            <strong>{formatRate(upsidePercent)}{upsideRecommendation !== '-' ? ` (${upsideRecommendation})` : ''}</strong>
           </div>
         </article>
 
         <article className="panel chart-panel">
-          <h2>Crescimento de Receita</h2>
+          <h2>Revenue Growth</h2>
           <div className="bar-chart">
             {projectionGrowthData.length === 0 ? (
-              <div className="bar-empty">Preencha Cresc. Receita por Ano para exibir o gráfico.</div>
+              <div className="bar-empty">Fill Revenue Growth by Year to display the chart.</div>
             ) : projectionGrowthData.map((item) => (
               <div className="bar-item" key={item.label}>
                 <div className="bar-value">{formatRate(item.value)}</div>
@@ -103,10 +103,10 @@ function HomeScreen({
         </article>
 
         <article className="panel chart-panel">
-          <h2>Mercado vs Intrínseco</h2>
+          <h2>Market vs Intrinsic</h2>
           <div className="bar-chart small market-comparison-chart">
             {marketComparisonData.length === 0 ? (
-              <div className="bar-empty">Sem valores calculados para comparação.</div>
+              <div className="bar-empty">No calculated values available for comparison.</div>
             ) : marketComparisonData.map((item) => {
               const parsedValue = Number(item.value);
               const isNegative = Number.isFinite(parsedValue) && parsedValue < 0;

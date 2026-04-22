@@ -7,16 +7,16 @@ function SensitivityScreen({
 }) {
   return (
     <section className="sensitivity-section">
-      {sensitivityLoading && <p>Calculando sensibilidade...</p>}
+      {sensitivityLoading && <p>Calculating sensitivity...</p>}
         {sensitivityError && <p className="feedback error">{sensitivityError}</p>}
       {!sensitivityLoading && !sensitivityResult && !sensitivityError && (
-        <p>Calcule o valuation primeiro para ver a análise de sensibilidade.</p>
+        <p>Calculate valuation first to view the sensitivity analysis.</p>
       )}
 
       {sensitivityResult && (
         <>
           <article className="panel sensitivity-panel">
-            <h2>Sensibilidade - WACC x Crescimento Perpétuo (g)</h2>
+            <h2>Sensitivity - WACC x Perpetual Growth (g)</h2>
             <table>
               <thead>
                 <tr>
@@ -29,7 +29,7 @@ function SensitivityScreen({
               <tbody>
                 {(sensitivityResult?.matrices?.waccVsG?.rows || []).length === 0 ? (
                   <tr>
-                    <td colSpan="2">Sem dados para matriz WACC x g.</td>
+                    <td colSpan="2">No data for WACC x g matrix.</td>
                   </tr>
                 ) : (
                   (sensitivityResult?.matrices?.waccVsG?.rows || []).map((row) => (
@@ -51,7 +51,7 @@ function SensitivityScreen({
           </article>
 
           <article className="panel sensitivity-panel">
-            <h2>Sensibilidade - WACC x Margem EBITDA</h2>
+            <h2>Sensitivity - WACC x EBITDA Margin</h2>
             <table>
               <thead>
                 <tr>
@@ -66,7 +66,7 @@ function SensitivityScreen({
               <tbody>
                 {(sensitivityResult?.matrices?.waccVsEbitdaMargin?.rows || []).length === 0 ? (
                   <tr>
-                    <td colSpan="2">Sem dados para matriz WACC x margem EBITDA.</td>
+                    <td colSpan="2">No data for WACC x EBITDA margin matrix.</td>
                   </tr>
                 ) : (
                   (sensitivityResult?.matrices?.waccVsEbitdaMargin?.rows || []).map((row) => (
@@ -88,7 +88,7 @@ function SensitivityScreen({
           </article>
 
           <article className="panel sensitivity-panel">
-            <h2>Sensibilidade - g x Margem EBITDA</h2>
+            <h2>Sensitivity - g x EBITDA Margin</h2>
             <table>
               <thead>
                 <tr>
@@ -103,7 +103,7 @@ function SensitivityScreen({
               <tbody>
                 {(sensitivityResult?.matrices?.gVsEbitdaMargin?.rows || []).length === 0 ? (
                   <tr>
-                    <td colSpan="2">Sem dados para matriz g x margem EBITDA.</td>
+                    <td colSpan="2">No data for g x EBITDA margin matrix.</td>
                   </tr>
                 ) : (
                   (sensitivityResult?.matrices?.gVsEbitdaMargin?.rows || []).map((row) => (
