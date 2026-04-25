@@ -2,6 +2,15 @@
 
 A web application for intrinsic value estimation of publicly traded companies using the Discounted Cash Flow (DCF) methodology — the standard valuation framework used by investment banks, equity research analysts, and asset managers.
 
+## Demo Notice
+
+This is a static frontend demo. The backend microservices are not running in this deployment.
+
+All financial data displayed — including Meta Platforms (META) FY2024 market data, projection assumptions, and valuation output — has been pre-calculated using the exact logic implemented in the backend engine, and hardcoded into the frontend for demonstration purposes.
+
+The underlying financial model (FCFF-based DCF, CAPM-derived WACC, Gordon Growth terminal value) is fully implemented in the backend codebase and available for review in this repository. The numbers shown reflect a real execution of that model against audited FY2024 data sourced from Meta's SEC 10-K filing.
+
+To run the full application with live data input, clone the repository and follow the local setup instructions below.
 ---
 
 ## Author
@@ -33,7 +42,7 @@ FCFF = NOPAT + D&A - Capex - Change in NWC
 
 **Discount Rate (WACC)**
 
-The cost of capital is calculated via the CAPM framework:
+The model calculates a CAPM-based WACC reference and uses it as the default discount rate. A manual discount rate can be used as an override when provided:
 
 ```
 Ke = Rf + Beta x Equity Risk Premium
@@ -52,9 +61,17 @@ The model supports two terminal value methods:
 
 ```
 Enterprise Value (EV) = Sum of discounted FCFFs + PV of Terminal Value
-Equity Value = Enterprise Value (EV) - Net Debt
+Net Debt (derived) = Total Debt - Cash
+Equity Value = Enterprise Value (EV) - Net Debt (derived)
 Intrinsic Value per Share = Equity Value / Shares Outstanding
 ```
+
+**Depreciation Projection Logic**
+
+The model supports two depreciation projection modes:
+
+- PPE-based mode (when `ppe` is provided in market data): each year, projected Capex is added to prior PPE and depreciation is applied over the accumulated asset base.
+- Revenue-based fallback (for backward compatibility): depreciation is projected as a fixed ratio of revenue.
 
 ---
 
@@ -118,10 +135,10 @@ Meta's 2023–2024 turnaround — from the "Year of Efficiency" cost restructuri
 
 | Metric | Value |
 |--------|-------|
-| Intrinsic Value per Share | ~$350–380 |
-| Enterprise Value | ~$850–950 billion |
+| Intrinsic Value per Share | ~$335 |
+| Enterprise Value | ~$836 billion |
 | Market Price | $589.00 |
-| Upside / Downside | ~-40% (SELL signal under conservative assumptions) |
+| Upside / Downside | ~-43% (SELL signal under conservative assumptions) |
 
 The gap between the model's intrinsic value and the current market price reflects conservative growth assumptions relative to market consensus. Meta's stock is priced for continued AI monetization, sustained margin expansion, and growth in Reels and WhatsApp Business. The sensitivity analysis demonstrates that under a WACC of 8.5% and perpetual growth of 3.5% — closer to sell-side consensus — the model converges toward the $550–600 range, narrowing the discount to market significantly.
 

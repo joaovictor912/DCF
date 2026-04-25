@@ -56,14 +56,13 @@ function AssumptionsScreen({
           </label>
 
           <label>
-            <span>Discount Rate (0 to 1)</span>
+            <span>Discount Rate (optional, 0 to 1)</span>
             <input
               name="discountRate"
               type="number"
               step="any"
               value={assumptionsForm.discountRate}
               onChange={handleAssumptionChange}
-              required
             />
           </label>
 

@@ -1,25 +1,25 @@
-# Microsserviço 2 - Market Data
+# Microservice 2 - Market Data
 
-Serviço responsável por armazenar os dados atuais de balanço usados no modelo DCF.
+Service responsible for storing current financial data used by the DCF model.
 
-## Dados armazenados
+## Stored data
 
-- `companyId` (inteiro positivo)
-- `cash` (caixa)
-- `netDebt` (dívida líquida)
-- `sharesOutstanding` (total de ações emitidas)
-- `updatedAt` (data/hora da última atualização)
+- `companyId` (positive integer)
+- `cash`
+- `netDebt`
+- `sharesOutstanding`
+- `updatedAt` (last update timestamp)
 
 ## Endpoints
 
-- `GET /health` - status do microsserviço
-- `GET /market-data` - lista todos os registros
-- `GET /market-data/:companyId` - consulta dados por empresa
-- `POST /market-data` - cria registro de dados de mercado
-- `PUT /market-data/:companyId` - atualiza registro existente
-- `DELETE /market-data/:companyId` - remove registro
+- `GET /health` - microservice status
+- `GET /market-data` - list all records
+- `GET /market-data/:companyId` - get data by company
+- `POST /market-data` - create market data record
+- `PUT /market-data/:companyId` - update an existing record
+- `DELETE /market-data/:companyId` - delete a record
 
-## Exemplo:
+## Example
 
 ```json
 {

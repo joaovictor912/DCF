@@ -44,7 +44,6 @@ const MARKET_DATA_REQUIRED_FIELDS = [
 const ASSUMPTIONS_REQUIRED_FIELDS = [
   'companyId',
   'projectionYears',
-  'discountRate',
   'revenueGrowthByYear',
   'projectedEbitdaMargin',
   'capexPercentOfRevenue',
@@ -192,6 +191,23 @@ function validateAndNormalizeMarketData(payload, options = {}) {
     normalized[field] = parsed.value;
   }
 
+  const hasPpe = normalizedPayload.ppe !== undefined
+    && normalizedPayload.ppe !== null
+    && String(normalizedPayload.ppe).trim() !== '';
+
+  if (hasPpe) {
+    const ppeResult = parseNumericField(normalizedPayload.ppe, 'ppe');
+    if (ppeResult.error) {
+      return { error: ppeResult.error };
+    }
+
+    if (ppeResult.value < 0) {
+      return { error: 'ppe deve ser maior ou igual a 0.' };
+    }
+
+    normalized.ppe = ppeResult.value;
+  }
+
   if (normalized.currentStockPrice <= 0) {
     return { error: 'currentStockPrice deve ser maior que 0.' };
   }
@@ -277,13 +293,22 @@ function validateAndNormalizeAssumptions(payload, options = {}) {
     normalizedRevenueGrowth.push(growthResult.value);
   }
 
-  const discountRateResult = parseNumericField(normalizedPayload.discountRate, 'discountRate');
-  if (discountRateResult.error) {
-    return { error: discountRateResult.error };
-  }
+  let normalizedDiscountRate = null;
+  const hasManualDiscountRate = normalizedPayload.discountRate !== undefined
+    && normalizedPayload.discountRate !== null
+    && String(normalizedPayload.discountRate).trim() !== '';
 
-  if (discountRateResult.value <= 0 || discountRateResult.value >= 1) {
-    return { error: 'discountRate deve ser maior que 0 e menor que 1.' };
+  if (hasManualDiscountRate) {
+    const discountRateResult = parseNumericField(normalizedPayload.discountRate, 'discountRate');
+    if (discountRateResult.error) {
+      return { error: discountRateResult.error };
+    }
+
+    if (discountRateResult.value <= 0 || discountRateResult.value >= 1) {
+      return { error: 'discountRate deve ser maior que 0 e menor que 1.' };
+    }
+
+    normalizedDiscountRate = discountRateResult.value;
   }
 
   const riskFreeRateResult = parseNumericField(
@@ -345,8 +370,8 @@ function validateAndNormalizeAssumptions(payload, options = {}) {
     return { error: perpetualGrowthRateResult.error };
   }
 
-  if (perpetualGrowthRateResult.value < 0 || perpetualGrowthRateResult.value >= discountRateResult.value) {
-    return { error: 'perpetualGrowthRate deve ser maior ou igual a 0 e menor que discountRate.' };
+  if (perpetualGrowthRateResult.value < 0 || perpetualGrowthRateResult.value >= 1) {
+    return { error: 'perpetualGrowthRate deve ser maior ou igual a 0 e menor que 1.' };
   }
 
   const method = String(normalizedPayload.terminalValueMethod).trim().toUpperCase();
@@ -372,7 +397,7 @@ function validateAndNormalizeAssumptions(payload, options = {}) {
     value: {
       companyId: companyIdResult.value,
       projectionYears: projectionYearsNumber,
-      discountRate: discountRateResult.value,
+      discountRate: normalizedDiscountRate,
       riskFreeRate: riskFreeRateResult.value,
       marketRiskPremium: marketRiskPremiumResult.value,
       revenueGrowthByYear: normalizedRevenueGrowth,
@@ -492,7 +517,9 @@ function calculateValuation(companyId) {
 
   const projectedCashFlows = [];
 
-  const manualDiscountRate = assumptions.discountRate;
+  const manualDiscountRate = Number.isFinite(Number(assumptions.discountRate))
+    ? Number(assumptions.discountRate)
+    : null;
   const riskFreeRate = Number.isFinite(Number(assumptions.riskFreeRate))
     ? Number(assumptions.riskFreeRate)
     : SANITIZED_DEFAULT_RISK_FREE_RATE;
@@ -513,12 +540,22 @@ function calculateValuation(companyId) {
   const waccReference = (
     (costOfEquity * marketValueEquity) + (costOfDebtAfterTax * marketValueDebt)
   ) / capitalBase;
+  const effectiveDiscountRate = manualDiscountRate ?? waccReference;
+
+  if (effectiveDiscountRate <= 0 || effectiveDiscountRate >= 1) {
+    return { error: 'Taxa de desconto efetiva invalida para o valuation.' };
+  }
 
   const depreciationRate = marketData.revenue > 0
     ? marketData.depreciation / marketData.revenue
     : 0;
+  const canUsePpeModel = Number.isFinite(Number(marketData.ppe)) && Number(marketData.ppe) > 0;
+  const ppeDepreciationRate = canUsePpeModel
+    ? marketData.depreciation / Number(marketData.ppe)
+    : null;
 
   let previousRevenue = marketData.revenue;
+  let previousPpe = canUsePpeModel ? Number(marketData.ppe) : null;
 
   for (let i = 0; i < assumptions.projectionYears; i += 1) {
     const year = i + 1;
@@ -526,14 +563,16 @@ function calculateValuation(companyId) {
 
     const revenue = previousRevenue * (1 + growthRate);
     const ebitda = revenue * assumptions.projectedEbitdaMargin;
-    const depreciation = revenue * depreciationRate;
+    const capex = revenue * assumptions.capexPercentOfRevenue;
+    const depreciation = canUsePpeModel
+      ? (previousPpe + capex) * ppeDepreciationRate
+      : revenue * depreciationRate;
     const ebit = ebitda - depreciation;
     const nopat = ebit * (1 - marketData.effectiveTaxRate);
-    const capex = revenue * assumptions.capexPercentOfRevenue;
     const workingCapitalVariation = revenue * assumptions.workingCapitalChangePercentOfRevenue;
     const fcff = nopat + depreciation - capex - workingCapitalVariation;
 
-    const discountFactor = (1 + manualDiscountRate) ** year;
+    const discountFactor = (1 + effectiveDiscountRate) ** year;
     const presentValueFcff = fcff / discountFactor;
 
     projectedCashFlows.push({
@@ -552,6 +591,9 @@ function calculateValuation(companyId) {
     });
 
     previousRevenue = revenue;
+    if (canUsePpeModel) {
+      previousPpe = Math.max(previousPpe + capex - depreciation, 0);
+    }
   }
 
   const discountedCashFlows = projectedCashFlows.reduce(
@@ -569,10 +611,10 @@ function calculateValuation(companyId) {
 
   if (assumptions.terminalValueMethod === 'GORDON') {
     const nextYearFcff = lastYear.fcff * (1 + assumptions.perpetualGrowthRate);
-    const denominator = manualDiscountRate - assumptions.perpetualGrowthRate;
+    const denominator = effectiveDiscountRate - assumptions.perpetualGrowthRate;
 
     if (denominator <= 0) {
-      return { error: 'discountRate deve ser maior que perpetualGrowthRate no metodo GORDON.' };
+      return { error: 'A taxa de desconto efetiva deve ser maior que perpetualGrowthRate no metodo GORDON.' };
     }
 
     terminalValue = nextYearFcff / denominator;
@@ -590,9 +632,10 @@ function calculateValuation(companyId) {
     };
   }
 
-  const presentValueTerminalValue = terminalValue / ((1 + manualDiscountRate) ** assumptions.projectionYears);
+  const presentValueTerminalValue = terminalValue / ((1 + effectiveDiscountRate) ** assumptions.projectionYears);
   const enterpriseValue = discountedCashFlows + presentValueTerminalValue;
-  const equityValue = enterpriseValue - marketData.netDebt;
+  const derivedNetDebt = marketData.totalDebt - marketData.cash;
+  const equityValue = enterpriseValue - derivedNetDebt;
 
   const fairValuePerShare = marketData.sharesOutstanding > 0
     ? equityValue / marketData.sharesOutstanding
@@ -623,7 +666,7 @@ function calculateValuation(companyId) {
       marketValueEquity,
       marketValueDebt,
       waccReference,
-      discountRateMinusWaccReference: manualDiscountRate - waccReference
+      discountRateMinusWaccReference: effectiveDiscountRate - waccReference
     },
     valuation: {
       discountedCashFlows,

@@ -1,43 +1,43 @@
-# Microsservico 4 - Valuation Engine
+# Microservice 4 - Valuation Engine
 
-Servico responsavel por processar os dados financeiros e calcular o valuation por DCF.
+Service responsible for processing financial data and calculating DCF valuation.
 
-## Objetivo
+## Purpose
 
-- Receber eventos dos outros microsservicos
-- Manter um estado interno por empresa
-- Calcular fluxos de caixa futuros e trazer a valor presente
-- Determinar Enterprise Value, Equity Value e preco justo por acao
+- Receive events from other microservices
+- Keep an internal per-company state
+- Calculate future cash flows and discount them to present value
+- Determine Enterprise Value, Equity Value, and fair value per share
 
-## Como executar
+## How to run
 
-1. Instale as dependencias:
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-2. Rode o servico:
+2. Start the service:
 
 ```bash
 npm run dev
 ```
 
-Padrao de porta: `3004`
+Default port: `3004`
 
 ## Endpoints
 
-- `GET /health` - status do servico
-- `GET /events/types` - lista de tipos de evento suportados
-- `POST /events` - processa um evento ou um array de eventos
-- `GET /state` - mostra quais empresas possuem market data/premissas/valuation
-- `GET /valuations` - lista valuations em cache
-- `GET /valuation/:companyId` - retorna valuation em cache (nao recalcula)
-- `POST /valuation/:companyId/recalculate` - recalculo explicito
-- `POST /valuation/recalculate-all` - recalculo de todas as empresas com dados completos
-- `POST /valuation/:companyId/sync-from-services` - busca dados nos microsservicos 1, 2 e 3 e calcula valuation
+- `GET /health` - service status
+- `GET /events/types` - list supported event types
+- `POST /events` - process a single event or an array of events
+- `GET /state` - show which companies have market data/assumptions/valuation
+- `GET /valuations` - list cached valuations
+- `GET /valuation/:companyId` - return cached valuation (does not recalculate)
+- `POST /valuation/:companyId/recalculate` - explicit recalculation
+- `POST /valuation/recalculate-all` - recalculate all companies with complete data
+- `POST /valuation/:companyId/sync-from-services` - fetch data from microservices 1, 2, and 3 and calculate valuation
 
-## Tipos de evento
+## Event types
 
 - `COMPANY_UPSERTED`
 - `COMPANY_DELETED`
@@ -46,7 +46,7 @@ Padrao de porta: `3004`
 - `ASSUMPTIONS_UPSERTED`
 - `ASSUMPTIONS_DELETED`
 
-## Exemplo de evento unico
+## Single event example
 
 ```json
 {
@@ -68,7 +68,7 @@ Padrao de porta: `3004`
 }
 ```
 
-## Exemplo de lote de eventos
+## Event batch example
 
 ```json
 [
@@ -78,7 +78,7 @@ Padrao de porta: `3004`
       "id": 3,
       "name": "Apple Inc.",
       "ticker": "AAPL",
-      "sector": "Tecnologia"
+      "sector": "Technology"
     }
   },
   {
@@ -104,36 +104,39 @@ Padrao de porta: `3004`
 ]
 ```
 
-## Formula financeira usada
+## Financial model used
 
-1. Receita projetada por ano:
+1. Revenue projection by year:
 
-`receita_t = receita_(t-1) * (1 + crescimento_t)`
+`revenue_t = revenue_(t-1) * (1 + growth_t)`
 
-2. FCFF por ano:
+2. FCFF by year:
 
-`FCFF = NOPAT + Depreciacao - Capex - VariacaoCapitalGiro`
+`FCFF = NOPAT + Depreciation - Capex - WorkingCapitalChange`
 
-3. Valor presente dos FCFF (usando discountRate manual informado pelo usuario):
+3. Present value of FCFF:
 
-`PV(FCFF_t) = FCFF_t / (1 + discountRate)^t`
+By default, FCFF is discounted using CAPM-based WACC reference. If a manual `discountRate` is provided, it is used as an override.
 
-4. Valor terminal:
+`PV(FCFF_t) = FCFF_t / (1 + effectiveDiscountRate)^t`
+
+4. Terminal value:
 
 - Gordon:
-  `TV = FCFF_(N+1) / (discountRate - g)`
+  `TV = FCFF_(N+1) / (effectiveDiscountRate - g)`
 - Exit Multiple:
-  `TV = EBITDA_N * MultiploSaida`
+  `TV = EBITDA_N * ExitMultiple`
 
-5. Valor da firma e valor do patrimonio:
+5. Firm value and equity value:
 
-- `EnterpriseValue = SomaPV(FCFF) + PV(TV)`
-- `EquityValue = EnterpriseValue - NetDebt`
-- `PrecoJusto = EquityValue / SharesOutstanding`
+- `EnterpriseValue = SumPV(FCFF) + PV(TV)`
+- `NetDebt (derived) = totalDebt - cash`
+- `EquityValue = EnterpriseValue - NetDebt (derived)`
+- `FairValue = EquityValue / SharesOutstanding`
 
-## WACC de referencia (CAPM)
+## Reference WACC (CAPM)
 
-O engine calcula tambem um WACC de referencia para comparacao com o `discountRate` manual:
+The engine also calculates a reference WACC for comparison:
 
 - `Ke = Rf + beta * (Rm - Rf)`
 - `Kd = costOfDebt * (1 - effectiveTaxRate)`
@@ -141,7 +144,7 @@ O engine calcula tambem um WACC de referencia para comparacao com o `discountRat
 - `D = totalDebt`
 - `WACC_ref = Ke * E/(E + D) + Kd * D/(E + D)`
 
-Campos retornados em `rates`:
+Fields returned in `rates`:
 
 - `manualDiscountRate`
 - `riskFreeRate`
@@ -151,15 +154,15 @@ Campos retornados em `rates`:
 - `waccReference`
 - `discountRateMinusWaccReference`
 
-## Sincronizacao com servicos 1, 2 e 3
+## Synchronization with services 1, 2, and 3
 
-O endpoint `POST /valuation/:companyId/sync-from-services` busca automaticamente:
+The endpoint `POST /valuation/:companyId/sync-from-services` automatically fetches from:
 
-- `ms-gestao-empresas` (porta 3001)
-- `ms-market-data` (porta 3002)
-- `ms-premissas-projecao` (porta 3003)
+- `ms-gestao-empresas` (port 3001)
+- `ms-market-data` (port 3002)
+- `ms-premissas-projecao` (port 3003)
 
-Voce pode customizar as URLs com variaveis de ambiente:
+You can customize URLs with environment variables:
 
 - `COMPANY_SERVICE_URL`
 - `MARKET_DATA_SERVICE_URL`

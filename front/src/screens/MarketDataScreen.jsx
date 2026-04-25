@@ -48,9 +48,8 @@ function MarketDataScreen({
                 <input
                   id="currentStockPrice"
                   name="currentStockPrice"
-                  type="number"
-                  min="0"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Current stock price ($)"
                   value={marketDataForm.currentStockPrice}
                   onChange={handleMarketDataChange}
@@ -63,9 +62,8 @@ function MarketDataScreen({
                 <input
                   id="sharesOutstanding"
                   name="sharesOutstanding"
-                  type="number"
-                  min="0"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Total shares outstanding"
                   value={marketDataForm.sharesOutstanding}
                   onChange={handleMarketDataChange}
@@ -78,9 +76,8 @@ function MarketDataScreen({
                 <input
                   id="beta"
                   name="beta"
-                  type="number"
-                  min="0"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Company beta"
                   value={marketDataForm.beta}
                   onChange={handleMarketDataChange}
@@ -93,9 +90,8 @@ function MarketDataScreen({
                 <input
                   id="totalDebt"
                   name="totalDebt"
-                  type="number"
-                  min="0"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Total gross debt ($)"
                   value={marketDataForm.totalDebt}
                   onChange={handleMarketDataChange}
@@ -108,8 +104,8 @@ function MarketDataScreen({
                 <input
                   id="costOfDebt"
                   name="costOfDebt"
-                  type="number"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Cost of debt (0 to 1)"
                   value={marketDataForm.costOfDebt}
                   onChange={handleMarketDataChange}
@@ -122,8 +118,8 @@ function MarketDataScreen({
                 <input
                   id="effectiveTaxRate"
                   name="effectiveTaxRate"
-                  type="number"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Effective tax rate (0 to 1)"
                   value={marketDataForm.effectiveTaxRate}
                   onChange={handleMarketDataChange}
@@ -140,9 +136,8 @@ function MarketDataScreen({
                 <input
                   id="cash"
                   name="cash"
-                  type="number"
-                  min="0"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Cash and equivalents ($)"
                   value={marketDataForm.cash}
                   onChange={handleMarketDataChange}
@@ -155,8 +150,8 @@ function MarketDataScreen({
                 <input
                   id="netDebt"
                   name="netDebt"
-                  type="number"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Net debt ($)"
                   value={marketDataForm.netDebt}
                   onChange={handleMarketDataChange}
@@ -169,9 +164,8 @@ function MarketDataScreen({
                 <input
                   id="revenue"
                   name="revenue"
-                  type="number"
-                  min="0"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Net revenue ($)"
                   value={marketDataForm.revenue}
                   onChange={handleMarketDataChange}
@@ -184,8 +178,8 @@ function MarketDataScreen({
                 <input
                   id="ebitda"
                   name="ebitda"
-                  type="number"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="EBITDA ($)"
                   value={marketDataForm.ebitda}
                   onChange={handleMarketDataChange}
@@ -198,8 +192,8 @@ function MarketDataScreen({
                 <input
                   id="ebit"
                   name="ebit"
-                  type="number"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="EBIT ($)"
                   value={marketDataForm.ebit}
                   onChange={handleMarketDataChange}
@@ -212,9 +206,8 @@ function MarketDataScreen({
                 <input
                   id="capex"
                   name="capex"
-                  type="number"
-                  min="0"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Period capex ($)"
                   value={marketDataForm.capex}
                   onChange={handleMarketDataChange}
@@ -227,9 +220,8 @@ function MarketDataScreen({
                 <input
                   id="depreciation"
                   name="depreciation"
-                  type="number"
-                  min="0"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Depreciation and amortization ($)"
                   value={marketDataForm.depreciation}
                   onChange={handleMarketDataChange}
@@ -242,8 +234,8 @@ function MarketDataScreen({
                 <input
                   id="workingCapital"
                   name="workingCapital"
-                  type="number"
-                  step="any"
+                  type="text"
+                  inputMode="decimal"
                   placeholder="Net working capital ($)"
                   value={marketDataForm.workingCapital}
                   onChange={handleMarketDataChange}

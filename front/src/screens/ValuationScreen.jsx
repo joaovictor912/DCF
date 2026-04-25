@@ -34,7 +34,7 @@ function ValuationScreen({
         {valuationSuccess && <p className="feedback success">{valuationSuccess}</p>}
       </section>
 
-      <section className="table-section">
+      <article className="panel dcf-section">
         <h2>Discounted Cash Flow</h2>
         <table>
           <thead>
@@ -97,72 +97,72 @@ function ValuationScreen({
             )}
           </tbody>
         </table>
-      </section>
 
-      <section className="valuation-box-wrap">
-        <article className="panel valuation-box">
-          <h3>Valuation Path</h3>
+        <section className="valuation-summary-wrap">
+          <article className="panel valuation-box">
+            <h3>Valuation Path</h3>
 
-          <div className="valuation-row">
-            <span>Enterprise Value:</span>
-            <strong>{formatMoney(summary.exitValue)}</strong>
-          </div>
-          <div className="valuation-row">
-            <span>Discount Rate (manual):</span>
-            <strong>{formatRate(rateComparison.manualDiscountRate)}</strong>
-          </div>
-          <div className="valuation-row">
-            <span>Reference WACC (CAPM):</span>
-            <strong>{formatRate(rateComparison.waccReference)}</strong>
-          </div>
-          <div className="valuation-row">
-            <span>Spread (manual - WACC):</span>
-            <strong>{formatRate(rateComparison.spread)}</strong>
-          </div>
-          <div className="valuation-row">
-            <span>Net Debt:</span>
-            <strong>{formatMoney(summary.netDebt)}</strong>
-          </div>
-          <div className="valuation-row">
-            <span>Equity Value:</span>
-            <strong>{formatMoney(summary.equityValue)}</strong>
-          </div>
-          <div className="valuation-row">
-            <span>Shares:</span>
-            <strong>{formatNumber(summary.sharesOutstanding)}</strong>
-          </div>
-          <div className="valuation-row">
-            <span>Fair Price:</span>
-            <strong>{formatMoney(summary.intrinsicPerShare)}</strong>
-          </div>
-        </article>
-
-        <div className="summary-grid">
-          <article className="panel mini">
-            <h3>Intrinsic Value</h3>
-            <p>Equity value/share</p>
-            <div className="mini-main">
+            <div className="valuation-row">
+              <span>Enterprise Value:</span>
+              <strong>{formatMoney(summary.exitValue)}</strong>
+            </div>
+            <div className="valuation-row">
+              <span>Discount Rate (manual):</span>
+              <strong>{formatRate(rateComparison.manualDiscountRate)}</strong>
+            </div>
+            <div className="valuation-row">
+              <span>Reference WACC (CAPM):</span>
+              <strong>{formatRate(rateComparison.waccReference)}</strong>
+            </div>
+            <div className="valuation-row">
+              <span>Spread (manual - WACC):</span>
+              <strong>{formatRate(rateComparison.spread)}</strong>
+            </div>
+            <div className="valuation-row">
+              <span>Net Debt:</span>
+              <strong>{formatMoney(summary.netDebt)}</strong>
+            </div>
+            <div className="valuation-row">
+              <span>Equity Value:</span>
+              <strong>{formatMoney(summary.equityValue)}</strong>
+            </div>
+            <div className="valuation-row">
+              <span>Shares:</span>
+              <strong>{formatNumber(summary.sharesOutstanding)}</strong>
+            </div>
+            <div className="valuation-row">
+              <span>Fair Price:</span>
               <strong>{formatMoney(summary.intrinsicPerShare)}</strong>
             </div>
           </article>
 
-          <article className="panel mini">
-            <h3>Market Value</h3>
-            <p>Equity value/share</p>
-            <div className="mini-main">
-              <strong>{formatMoney(summary.marketPerShare)}</strong>
-            </div>
-          </article>
+          <div className="summary-grid">
+            <article className="panel mini">
+              <h3>Intrinsic Value</h3>
+              <p>Equity value/share</p>
+              <div className="mini-main">
+                <strong>{formatMoney(summary.intrinsicPerShare)}</strong>
+              </div>
+            </article>
 
-          <article className="panel mini">
-            <h3>Return Rate - Upside (%)</h3>
-            <p>Target price upside potential</p>
-            <div className="mini-main">
-              <strong>{formatRate(upsidePercent)} ({upsideRecommendation})</strong>
-            </div>
-          </article>
-        </div>
-      </section>
+            <article className="panel mini">
+              <h3>Market Value</h3>
+              <p>Equity value/share</p>
+              <div className="mini-main">
+                <strong>{formatMoney(summary.marketPerShare)}</strong>
+              </div>
+            </article>
+
+            <article className="panel mini">
+              <h3>Return Rate - Upside (%)</h3>
+              <p>Target price upside potential</p>
+              <div className="mini-main">
+                <strong>{formatRate(upsidePercent)} ({upsideRecommendation})</strong>
+              </div>
+            </article>
+          </div>
+        </section>
+      </article>
     </>
   );
 }
