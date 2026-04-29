@@ -2,8 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
+  // Use relative paths in production so GitHub Pages serves static assets correctly.
+  base: command === 'build' ? './' : '/',
   server: {
     proxy: {
       '/api-sensitivity': {
@@ -33,4 +35,4 @@ export default defineConfig({
       }
     }
   }
-})
+}))
