@@ -8,47 +8,41 @@ import AssumptionsScreen from './screens/AssumptionsScreen';
 import ValuationScreen from './screens/ValuationScreen';
 import SensitivityScreen from './screens/SensitivityScreen';
 
-// ---------------------------------------------------------------------------
-// OFFLINE SEED — Meta Platforms FY2024 (audited, sourced from SEC 10-K)
-// ---------------------------------------------------------------------------
 const META_COMPANY = { id: 1, name: 'Meta Platforms', ticker: 'META', sector: 'Technology' };
 
 const META_MARKET_DATA = {
   companyId: 1,
-  currentStockPrice: 589.00,
-  sharesOutstanding: 2540000000,
-  beta: 1.31,
-  totalDebt: 28830000000,
-  costOfDebt: 0.04,
-  effectiveTaxRate: 0.15,
-  cash: 43000000000,
-  netDebt: -14170000000,
-  revenue: 164501000000,
-  ebitda: 84253000000,
-  ebit: 69380000000,
-  capex: 37725000000,
-  depreciation: 14873000000,
+  currentStockPrice: 597.63,
+  sharesOutstanding: 2530000000,
+  beta: 1.24,
+  totalDebt: 58700000000,
+  costOfDebt: 0.045,
+  effectiveTaxRate: 0.22,
+  cash: 81180000000,
+  netDebt: -22480000000,
+  revenue: 200966000000,
+  ebitda: 101892000000,
+  ebit: 83276000000,
+  capex: 69691000000,
+  depreciation: 18616000000,
   workingCapital: 0
 };
 
 const META_ASSUMPTIONS = {
   companyId: 1,
   projectionYears: 5,
-  discountRate: 0.10,
-  riskFreeRate: 0.045,
-  marketRiskPremium: 0.055,
-  revenueGrowthByYear: [0.15, 0.13, 0.11, 0.09, 0.08],
-  projectedEbitdaMargin: 0.512,
-  capexPercentOfRevenue: 0.20,
-  workingCapitalChangePercentOfRevenue: 0.005,
-  perpetualGrowthRate: 0.03,
+  discountRate: 0.10386190219801103,
+  riskFreeRate: 0.0445,
+  marketRiskPremium: 0.05,
+  revenueGrowthByYear: [0.21, 0.18, 0.15, 0.12, 0.10],
+  projectedEbitdaMargin: 0.5881,
+  capexPercentOfRevenue: 0.16,
+  workingCapitalChangePercentOfRevenue: 0.01013416960217226,
+  perpetualGrowthRate: 0.025,
   terminalValueMethod: 'GORDON',
   exitMultiple: null
 };
 
-// ---------------------------------------------------------------------------
-// OFFLINE DCF ENGINE — mirrors server_valuation-engine.js logic exactly
-// ---------------------------------------------------------------------------
 function calculateValuationOffline(marketData, assumptions) {
   const DEFAULT_RISK_FREE_RATE = 0.045;
   const DEFAULT_MARKET_RISK_PREMIUM = 0.055;
@@ -368,20 +362,21 @@ const SCREEN_DEFINITIONS = [
 // APP
 // ---------------------------------------------------------------------------
 function App() {
-  const [assumptionsForm, setAssumptionsForm] = useState({
-    companyId: '1',
-    projectionYears: '5',
-    discountRate: '0.10',
-    riskFreeRate: '0.045',
-    marketRiskPremium: '0.055',
-    revenueGrowthByYear: '0.15,0.13,0.11,0.09,0.08',
-    projectedEbitdaMargin: '0.512',
-    capexPercentOfRevenue: '0.20',
-    workingCapitalChangePercentOfRevenue: '0.005',
-    perpetualGrowthRate: '0.03',
-    terminalValueMethod: 'GORDON',
-    exitMultiple: ''
-  });
+const [assumptionsForm, setAssumptionsForm] = useState({
+  companyId: '1',
+  projectionYears: '5',
+  discountRate: '0.104',
+  riskFreeRate: '0.045',
+  marketRiskPremium: '0.055',
+  revenueGrowthByYear: '0.21,0.18,0.15,0.12,0.10',
+  projectedEbitdaMargin: '0.5881',
+  capexPercentOfRevenue: '0.16',
+  workingCapitalChangePercentOfRevenue: '0.005',
+  perpetualGrowthRate: '0.025',
+  terminalValueMethod: 'GORDON',
+  exitMultiple: ''
+});
+
   const [assumptionsList, setAssumptionsList] = useState([META_ASSUMPTIONS]);
   const [assumptionsLoading, setAssumptionsLoading] = useState(false);
   const [assumptionsError, setAssumptionsError] = useState('');
@@ -394,23 +389,23 @@ function App() {
   const [companySuccess, setCompanySuccess] = useState('');
 
   const [marketDataList, setMarketDataList] = useState([META_MARKET_DATA]);
-  const [marketDataForm, setMarketDataForm] = useState({
-    companyId: '1',
-    currentStockPrice: '589.00',
-    sharesOutstanding: '2,540,000,000',
-    beta: '1.31',
-    totalDebt: '28,830,000,000',
-    costOfDebt: '0.04',
-    effectiveTaxRate: '0.15',
-    cash: '43,000,000,000',
-    netDebt: '-14,170,000,000',
-    revenue: '164,501,000,000',
-    ebitda: '84,253,000,000',
-    ebit: '69,380,000,000',
-    capex: '37,725,000,000',
-    depreciation: '14,873,000,000',
-    workingCapital: '0'
-  });
+const [marketDataForm, setMarketDataForm] = useState({
+  companyId: '1',
+  currentStockPrice: '597.63',
+  sharesOutstanding: '2,530,000,000',
+  beta: '1.24',
+  totalDebt: '58,700,000,000',
+  costOfDebt: '0.045',
+  effectiveTaxRate: '0.22',
+  cash: '81,180,000,000',
+  netDebt: '-22,480,000,000',
+  revenue: '200,966,000,000',
+  ebitda: '101,892,000,000',
+  ebit: '83,276,000,000',
+  capex: '69,691,000,000',
+  depreciation: '18,616,000,000',
+  workingCapital: '0'
+});
   const [marketDataLoading, setMarketDataLoading] = useState(false);
   const [marketDataError, setMarketDataError] = useState('');
   const [marketDataSuccess, setMarketDataSuccess] = useState('');
@@ -732,25 +727,25 @@ function App() {
     setMarketDataForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const resetMarketDataForm = () => {
-    setMarketDataForm({
-      companyId: '1',
-      currentStockPrice: '589.00',
-      sharesOutstanding: '2,540,000,000',
-      beta: '1.31',
-      totalDebt: '28,830,000,000',
-      costOfDebt: '0.04',
-      effectiveTaxRate: '0.15',
-      cash: '43,000,000,000',
-      netDebt: '-14,170,000,000',
-      revenue: '164,501,000,000',
-      ebitda: '84,253,000,000',
-      ebit: '69,380,000,000',
-      capex: '37,725,000,000',
-      depreciation: '14,873,000,000',
-      workingCapital: '0'
-    });
-  };
+const resetMarketDataForm = () => {
+  setMarketDataForm({
+    companyId: '1',
+    currentStockPrice: '597.63',
+    sharesOutstanding: '2,530,000,000',
+    beta: '1.24',
+    totalDebt: '58,700,000,000',
+    costOfDebt: '0.045',
+    effectiveTaxRate: '0.22',
+    cash: '81,180,000,000',
+    netDebt: '-22,480,000,000',
+    revenue: '200,966,000,000',
+    ebitda: '101,892,000,000',
+    ebit: '83,276,000,000',
+    capex: '69,691,000,000',
+    depreciation: '18,616,000,000',
+    workingCapital: '0'
+  });
+};
 
   const parseNormalizedNumber = (value) => {
     if (value === null || value === undefined || value === '') return NaN;
